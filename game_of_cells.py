@@ -55,6 +55,11 @@ def divison(x,y):
         if empties:
                 return random.choice(empties)  
 
+def world_location():
+        for x in range(height):
+                for y in range(width):
+                        yield x,y
+        
 height, width = 5, 5
 
 
@@ -67,15 +72,16 @@ insert_cells({
 show_world()
 
                                        
-for loop in [0,0,0]:
+for looop in range(5):
         tmp = cp(world)
-        for x in range(height):
-                for y in range(width):
-                        if world[x][y].cell != "":
-                                ij = divison(x, y)
-                                if ij:
-                                        i, j = ij
-                                        tmp[i][j].cell = world[x][y].cell
+        for x,y in world_location():
+                if world[x][y].cell != "":
+                        ij = divison(x, y)
+                        if ij:
+                                i, j = ij
+                                tmp[i][j].cell = world[x][y].cell
+
+
         world = cp(tmp)
         del tmp
 
