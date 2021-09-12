@@ -8,6 +8,13 @@ class Room:
                 self.y = y
                 self.cell = " "
 
+        def empties(self):
+                empties = []
+                for i,j in self.neighbours_location:
+                        if world[i][j].cell == " ":
+                                empties.append((i,j))
+                return empties
+
 
 def create_world():
         global world, height, width
