@@ -26,10 +26,15 @@ class Room:
                 return empties
 
 
-def create_world():
-        global world, height, width
+def create_world(height, width, cells):
 
         world = [[Room(x, y) for y in range(width)] for x in range(height)]
+
+        for cell_type in cells:
+                for x,y in cells[cell_type]:
+                       world[x][y].cell = cell_type
+
+        return world
 
 def show_world():
         global world, height, width
@@ -42,13 +47,6 @@ def show_world():
                         else: row += world[x][y].cell
                 row += "]"
                 print(row)
-
-def insert_cells(cells):
-        global world, height, width
-
-        for cell_type in cells:
-                for x,y in cells[cell_type]:
-                       world[x][y].cell = cell_type  
 
 def divison(x,y):
         global world, height, width
@@ -72,11 +70,14 @@ def fight(x,y):
 height, width = 5, 5
 
 
-create_world()
-insert_cells({
-        "A" : [(0,0)],
-        "B" : [(4,4)]
-        })
+world = create_world(
+        height, width,
+        {
+                "A" : [(0,0)],
+                "B" : [(4,4)]
+                }
+        )
+
 
 show_world()
 
@@ -102,4 +103,4 @@ while True:
 
         os.system('clear')  
         show_world()
-        time.sleep(0.1)
+        time.sleep(0.5)
