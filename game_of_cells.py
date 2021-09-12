@@ -59,27 +59,38 @@ def world_location():
         for x in range(height):
                 for y in range(width):
                         yield x,y
-        
+
+def fight(x,y):
+        fighters = []
+        for i in tmp[x][y].cell:
+                fighters.append(i)
+        return random.choice(fighters)
+
+                
 height, width = 5, 5
 
 
 create_world()
 insert_cells({
-        "A" : [(0,0), (0,1), (1,2), (2,2)],
-        #"B" : [(4,4)]seyed1378alireza
+        "A" : [(0,0)],
+        "B" : [(4,4)]
         })
 
 show_world()
 
                                        
-for looop in range(5):
+while True:
         tmp = cp(world)
         for x,y in world_location():
                 if world[x][y].cell != "":
                         ij = divison(x, y)
                         if ij:
                                 i, j = ij
-                                tmp[i][j].cell = world[x][y].cell
+                                tmp[i][j].cell += world[x][y].cell
+        
+        for x,y in world_location():
+                if len(tmp[x][y].cell) > 1:
+                        tmp[x][y].cell = fight(x,y)
 
 
         world = cp(tmp)
