@@ -6,19 +6,12 @@ from colorama import Fore #BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
 
 class Room:
         global world, height, width
-        color = dict()
 
         def __init__(self, x, y):
                 self.x = x
                 self.y = y
                 self.cell = ""
-
-                self.neighbours_location = []
-                for i in range(-1,2):
-                        for j in range(-1,2):
-                                if x+i in range(0, height) and y+j in range(0, width):
-                                        self.neighbours_location.append((x+i, y+j))
-                self.neighbours_location.remove((x,y)) 
+                self.neighbours_location = self.create_neighbours_location()
 
         def empties(self):
                 empties = []
@@ -26,18 +19,44 @@ class Room:
                         if world[i][j].cell == "":
                                 empties.append((i,j))
                 return empties
+        
+        def create_neighbours_location(self):
+                neighbours_location = []
 
+                for i in range(-1,2):
+                        for j in range(-1,2):
+                                if self.x+i in range(0, height) and self.y+j in range(0, width):
+                                        neighbours_location.append((self.x+i, self.y+j))
+                neighbours_location.remove((self.x,self.y))
+                return neighbours_location
 
-def create_world(height, width, cells):
+        def divison_state(self):
+                if self.cell != "":
+                        if self.empties():
+                                return True
+                return False
+                
+        def competition_state(self):
+                if len(tmp[self.x][self.y].cell) > 1:
+                        return True
+                return False
+                
+        def divison(self):
+                empties = self.empties()
+                return random.choice(empties)
+        
+        def competition(self):
+                fighters = []
+                for i in self.cell:
+                        fighters.append(i)
+                return random.choice(fighters)
+                        
+def create_world(height, width, types, locations):
 
         world = [[Room(x, y) for y in range(width)] for x in range(height)]
-
-        for cell_type in cells:
-                for x,y in cells[cell_type]["locations"]:
+        for cell_type in types:
+                for x,y in locations[cell_type]:
                        world[x][y].cell = cell_type
-
-                Room.color[cell_type] = cells[cell_type]["color"]
-
         return world
 
 def show_world():
@@ -46,39 +65,34 @@ def show_world():
         for x in range(height):
                 row = Fore.RESET+"["
                 for y in range(width):
-                        if world[x][y].cell == "":
-                                row += Fore.RESET+" "
-                        else: row += Room.color[world[x][y].cell] + world[x][y].cell
+                        cell_type =  world[x][y].cell
+                        if cell_type == "": cell_type = " "
+                        row += cell_colors[cell_type] + cell_type
                 row += Fore.RESET+"]"
                 print(row)
-
-def divison(x,y):
-        global world, height, width
-
-        empties = world[x][y].empties()
-        if empties:
-                return random.choice(empties)  
 
 def world_location():
         for x in range(height):
                 for y in range(width):
                         yield x,y
 
-def fight(x,y):
-        fighters = []
-        for i in tmp[x][y].cell:
-                fighters.append(i)
-        return random.choice(fighters)
 
                 
 height, width = 5, 5
-insert_cells = {
-        "A" : {"locations": [(0,0)], "color": Fore.GREEN},
-        "B" : {"locations": [(4,4)], "color": Fore.RED},
-        "C" : {"locations": [(2,4)], "color": Fore.BLUE}    
+cell_types = ["A", "B", "C"]
+cell_locations = {
+        "A": [(0,0)],
+        "B": [(4,4)],
+        "C": [(2,4)]    
+}
+cell_colors = {
+        "A": Fore.GREEN,
+        "B": Fore.RED,
+        "C": Fore.BLUE,
+        " ": Fore.RESET       
 }
 
-world = create_world(height, width, insert_cells)
+world = create_world(height, width, cell_types, cell_locations)
 
 show_world()
 
@@ -87,21 +101,20 @@ while flag:
         flag = False
         tmp = cp(world)
         for x,y in world_location():
-                if world[x][y].cell != "":
-                        ij = divison(x, y)
-                        if ij:
-                                i, j = ij
-                                tmp[i][j].cell += world[x][y].cell
-                                flag =  True
-        
-        for x,y in world_location():
-                if len(tmp[x][y].cell) > 1:
-                        tmp[x][y].cell = fight(x,y)
-                        flag =  True
+                if world[x][y].divison_state():
+                        cell_type = world[x][y].cell
+                        r, c = world[x][y].divison()
 
+                        tmp[r][c].cell += cell_type
+
+                        if tmp[r][c].competition_state():
+                                winner = tmp[r][c].competition()
+                                tmp[r][c].cell = winner
+                        
+                        flag =  True
 
         world = cp(tmp)  
         del tmp
         os.system('clear')  
         show_world()
-        time.sleep(0.5)
+        time.sleep(0.05)
