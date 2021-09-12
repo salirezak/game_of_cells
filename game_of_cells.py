@@ -1,5 +1,7 @@
 import random
 from copy import deepcopy as cp
+import os
+import time
 
 class Room:
         global world, height, width
@@ -97,5 +99,7 @@ while True:
         del tmp
 
         print("")
-        
+
+        os.system('clear')  
         show_world()
+        time.sleep(0.1)
