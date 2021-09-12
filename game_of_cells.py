@@ -7,7 +7,7 @@ class Room:
         def __init__(self, x, y):
                 self.x = x
                 self.y = y
-                self.cell = " "
+                self.cell = ""
 
                 self.neighbours_location = []
                 for i in range(-1,2):
@@ -19,7 +19,7 @@ class Room:
         def empties(self):
                 empties = []
                 for i,j in self.neighbours_location:
-                        if world[i][j].cell == " ":
+                        if world[i][j].cell == "":
                                 empties.append((i,j))
                 return empties
 
@@ -34,9 +34,11 @@ def show_world():
 
         for x in range(height):
                 row = "["
-                for y in range(width): row += world[x][y].cell
+                for y in range(width):
+                        if world[x][y].cell == "":
+                                row += " "
+                        else: row += world[x][y].cell
                 row += "]"
-
                 print(row)
 
 def insert_cells(cells):
@@ -65,11 +67,11 @@ insert_cells({
 show_world()
 
                                        
-while True:
+for loop in [0,0,0]:
         tmp = cp(world)
         for x in range(height):
                 for y in range(width):
-                        if world[x][y].cell != " ":
+                        if world[x][y].cell != "":
                                 ij = divison(x, y)
                                 if ij:
                                         i, j = ij
@@ -80,7 +82,3 @@ while True:
         print("")
         
         show_world()
-
-
-
-                                               
