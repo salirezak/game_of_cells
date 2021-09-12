@@ -2,9 +2,11 @@ import random
 from copy import deepcopy as cp
 import os
 import time
+from colorama import Fore #BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
 
 class Room:
         global world, height, width
+        color = dict()
 
         def __init__(self, x, y):
                 self.x = x
@@ -31,8 +33,10 @@ def create_world(height, width, cells):
         world = [[Room(x, y) for y in range(width)] for x in range(height)]
 
         for cell_type in cells:
-                for x,y in cells[cell_type]:
+                for x,y in cells[cell_type]["locations"]:
                        world[x][y].cell = cell_type
+
+                Room.color[cell_type] = cells[cell_type]["color"]
 
         return world
 
@@ -40,12 +44,12 @@ def show_world():
         global world, height, width
 
         for x in range(height):
-                row = "["
+                row = Fore.RESET+"["
                 for y in range(width):
                         if world[x][y].cell == "":
-                                row += " "
-                        else: row += world[x][y].cell
-                row += "]"
+                                row += Fore.RESET+" "
+                        else: row += Room.color[world[x][y].cell] + world[x][y].cell
+                row += Fore.RESET+"]"
                 print(row)
 
 def divison(x,y):
@@ -68,20 +72,16 @@ def fight(x,y):
 
                 
 height, width = 5, 5
+insert_cells = {
+        "A" : {"locations": [(0,0)], "color": Fore.GREEN},
+        "B" : {"locations": [(4,4)], "color": Fore.RED},
+        "C" : {"locations": [(2,4)], "color": Fore.BLUE}    
+}
 
-
-world = create_world(
-        height, width,
-        {
-                "A" : [(0,0)],
-                "B" : [(4,4)]
-                }
-        )
-
+world = create_world(height, width, insert_cells)
 
 show_world()
-
-                                       
+                                
 while True:
         tmp = cp(world)
         for x,y in world_location():
