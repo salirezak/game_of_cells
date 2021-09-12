@@ -81,8 +81,10 @@ insert_cells = {
 world = create_world(height, width, insert_cells)
 
 show_world()
-                                
-while True:
+
+flag = True                                
+while flag:
+        flag = False
         tmp = cp(world)
         for x,y in world_location():
                 if world[x][y].cell != "":
@@ -90,17 +92,16 @@ while True:
                         if ij:
                                 i, j = ij
                                 tmp[i][j].cell += world[x][y].cell
+                                flag =  True
         
         for x,y in world_location():
                 if len(tmp[x][y].cell) > 1:
                         tmp[x][y].cell = fight(x,y)
+                        flag =  True
 
 
-        world = cp(tmp)
+        world = cp(tmp)  
         del tmp
-
-        print("")
-
         os.system('clear')  
         show_world()
         time.sleep(0.5)
