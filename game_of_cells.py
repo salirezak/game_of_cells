@@ -30,10 +30,11 @@ class Room:
                 neighbours_location.remove((self.x,self.y))
                 return neighbours_location
 
-        def divison_state(self):
+        def divison_state(self, loop_counter):
                 if self.cell != "":
-                        if self.empties():
-                                return True
+                        if loop_counter % cell_activites[self.cell] == 0:
+                                if self.empties():
+                                        return True
                 return False
                 
         def competition_state(self):
@@ -78,7 +79,7 @@ def world_location():
 
 
                 
-height, width = 5, 5
+height, width = 10, 20
 cell_types = ["A", "B", "C"]
 cell_locations = {
         "A": [(0,0)],
@@ -91,17 +92,23 @@ cell_colors = {
         "C": Fore.BLUE,
         " ": Fore.RESET       
 }
+cell_activites = {   #loop per cell cycle
+        "A": 3,
+        "B": 2,
+        "C": 1,
+}
 
 world = create_world(height, width, cell_types, cell_locations)
 
 show_world()
 
-flag = True                                
+flag = True
+loop_counter = 0                             
 while flag:
         flag = False
         tmp = cp(world)
         for x,y in world_location():
-                if world[x][y].divison_state():
+                if world[x][y].divison_state(loop_counter):
                         cell_type = world[x][y].cell
                         r, c = world[x][y].divison()
 
@@ -117,4 +124,5 @@ while flag:
         del tmp
         os.system('clear')  
         show_world()
-        time.sleep(0.05)
+        time.sleep(0.99)
+        loop_counter += 1
